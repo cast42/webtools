@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="nl">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vitodens 300 – Granny-proof</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --ink: #111;
+            --muted: #555;
+            --line: #e5e5e5;
+            --card: #f7f7f7;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: var(--bg);
+            color: var(--ink)
+        }
+
+        .wrap {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: 24px
+        }
+
+        h1 {
+            font-size: 28px;
+            margin: 0 0 8px
+        }
+
+        p {
+            margin: 0 0 12px;
+            color: var(--muted)
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--card);
+            padding: 16px;
+            margin: 14px 0
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px
+        }
+
+        @media (max-width:800px) {
+            .grid {
+                grid-template-columns: 1fr
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: hidden
+        }
+
+        th,
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            vertical-align: middle
+        }
+
+        th {
+            background: #f0f0f0;
+            font-weight: bold
+        }
+
+        tr:last-child td {
+            border-bottom: none
+        }
+
+        .kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 54px;
+            height: 38px;
+            padding: 0 10px;
+            border: 2px solid #cfcfcf;
+            border-radius: 10px;
+            background: #fff;
+            font-weight: 700
+        }
+
+        .kbd img {
+            max-height: 24px;
+            max-width: 44px;
+            display: block
+        }
+
+        .steps {
+            margin: 0;
+            padding-left: 20px
+        }
+
+        .steps li {
+            margin: 10px 0
+        }
+
+        .pattern {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(140px, 1fr));
+            gap: 10px
+        }
+
+        @media (max-width:800px) {
+            .pattern {
+                grid-template-columns: repeat(2, minmax(140px, 1fr))
+            }
+        }
+
+        .pstep {
+            background: #fff;
+            border: 1px dashed #cfcfcf;
+            border-radius: 12px;
+            padding: 10px;
+            font-weight: 700;
+            text-align: center
+        }
+
+        .warn {
+            background: #fff3f3;
+            border-left: 6px solid #c1121f;
+            padding: 12px;
+            border-radius: 10px
+        }
+
+        .small {
+            font-size: 13px;
+            color: var(--muted)
+        }
+
+        /* Print friendly */
+        @media print {
+            .wrap {
+                max-width: none;
+                padding: 12px
+            }
+
+            .card {
+                break-inside: avoid
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <h1>Vitodens 300 – Granny-proof stappenplan</h1>
+        <p>Doel: <b>Codering 1</b> openen, <b>d3</b> naar <b>12</b>, en <b>B0</b> + <b>B2</b> <b>noteren</b> en
+            tijdelijk op <b>0</b> zetten.</p>
+
+        <div class="grid">
+            <div class="card">
+                <h2 style="margin:0 0 10px">Knoppen – zo herken je ze</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Knop</th>
+                            <th>Naam</th>
+                            <th>Wat doet die?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="kbd">+</span></td>
+                            <td><b>PLUS</b></td>
+                            <td>Volgende code / hogere waarde</td>
+                        </tr>
+                        <tr>
+                            <td><span class="kbd">−</span></td>
+                            <td><b>MIN</b></td>
+                            <td>Vorige code / lagere waarde</td>
+                        </tr>
+                        <tr>
+                            <td><span class="kbd">OK</span></td>
+                            <td><b>OK</b></td>
+                            <td>Open code / bevestig waarde</td>
+                        </tr>
+                        <tr>
+                            <td><span class="kbd"><img
+                                        src="assets/radiator.png"
+                                        alt="Radiator-icoon" /></span></td>
+                            <td><b>RADIATOR (rechts)</b></td>
+                            <td>Samen met kraan: codering openen/sluiten</td>
+                        </tr>
+                        <tr>
+                            <td><span class="kbd"><img
+                                        src="assets/kraan.png"
+                                        alt="Kraan-icoon" /></span></td>
+                            <td><b>KRAAN (links)</b></td>
+                            <td>Samen met radiator: codering openen/sluiten</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="small" style="margin-top:10px">
+                    Als je de icoontjes niet ziet: controleer of de PNG-bestanden in "docs/assets/" staan.
+                </p>
+            </div>
+
+            <div class="card">
+                <h2 style="margin:0 0 10px">Altijd hetzelfde patroon</h2>
+                <div class="pattern">
+                    <div class="pstep">1️⃣ Zoeken<br><span class="kbd">+</span> / <span class="kbd">−</span></div>
+                    <div class="pstep">2️⃣ Openen<br><span class="kbd">OK</span></div>
+                    <div class="pstep">3️⃣ Veranderen<br><span class="kbd">+</span> / <span class="kbd">−</span></div>
+                    <div class="pstep">4️⃣ Bewaren<br><span class="kbd">OK</span> (“Overgenomen”)</div>
+                </div>
+                <div class="warn" style="margin-top:12px">
+                    <b>Regel 1:</b> eerst noteren, dan pas op 0 zetten.
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin:0 0 10px">De echte stappen</h2>
+
+            <h3 style="margin:10px 0 6px">A) Codering 1 openen</h3>
+            <ol class="steps">
+                <li>Druk <b>tegelijk</b> op <span class="kbd"><img
+                            src="assets/kraan.png"
+                            alt="Kraan" /></span> (links) + <span class="kbd"><img
+                            src="assets/radiator.png"
+                            alt="Radiator" /></span> (rechts).</li>
+                <li>Houd <b>2 seconden</b> ingedrukt.</li>
+                <li>Een code (bv. <b>A0</b>) knippert.</li>
+            </ol>
+
+            <h3 style="margin:16px 0 6px">B) d3 op 12 zetten</h3>
+            <ol class="steps">
+                <li>Druk op <span class="kbd">+</span> of <span class="kbd">−</span> tot <b>d3</b> knippert.</li>
+                <li>Druk <span class="kbd">OK</span>.</li>
+                <li>Zet de waarde op <b>12</b> met <span class="kbd">−</span>.</li>
+                <li>Druk <span class="kbd">OK</span> ("Overgenomen").</li>
+            </ol>
+
+            <h3 style="margin:16px 0 6px">C) Naar B0 en B2 (noteren → 0 → OK)</h3>
+            <ol class="steps">
+                <li>Druk <b>vaak</b> op <span class="kbd">+</span> tot <b>B0</b> knippert (dit kan even duren).</li>
+                <li>Druk <span class="kbd">OK</span> zodat de waarde knippert.</li>
+                <li><b>Schrijf de waarde op</b>.</li>
+                <li>Zet op <b>0</b> met <span class="kbd">+</span> / <span class="kbd">−</span>.</li>
+                <li>Druk <span class="kbd">OK</span> (Overgenomen).</li>
+                <li>Druk weer vaak op <span class="kbd">+</span> tot <b>B2</b> knippert.</li>
+                <li>Herhaal: <b>OK → noteren → 0 → OK</b>.</li>
+            </ol>
+
+            <h3 style="margin:16px 0 6px">D) Codering afsluiten</h3>
+            <ol class="steps">
+                <li>Druk opnieuw <b>tegelijk</b> op KRAAN + RADIATOR.</li>
+                <li>Houd <b>1 seconde</b> ingedrukt.</li>
+            </ol>
+
+            <div class="warn">
+                <b>Na de test:</b> zet B0 en B2 terug naar de originele waarden die je genoteerd hebt.
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
