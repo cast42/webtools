@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>webtools</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f3ef;
+        --ink: #1e1b16;
+        --accent: #0f6a7b;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Georgia", "Times New Roman", serif;
+        background: radial-gradient(circle at top left, #fffaf3, var(--bg));
+        color: var(--ink);
+      }
+
+      main {
+        max-width: 720px;
+        margin: 64px auto;
+        padding: 0 20px 48px;
+      }
+
+      h1 {
+        font-size: 2.6rem;
+        margin: 0 0 12px;
+        letter-spacing: 0.5px;
+      }
+
+      p {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        margin: 0 0 24px;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 12px;
+      }
+
+      li {
+        background: #ffffff;
+        border: 1px solid #e5ded6;
+        border-radius: 14px;
+        padding: 14px 16px;
+        box-shadow: 0 10px 25px rgba(30, 27, 22, 0.08);
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      .empty {
+        font-style: italic;
+        color: #5b5146;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>webtools</h1>
+      <p>Single-file HTML tools. Add new tools to <code>tools/</code> and link them here.</p>
+      <ul>
+        <li><a href="feel-the-agi.html">Feel the AGI</a></li>
+        <li><a href="viesmann_warmtepomp_test.html">Viesmann warmtepomp test</a></li>
+      </ul>
+    </main>
+  </body>
+</html>
