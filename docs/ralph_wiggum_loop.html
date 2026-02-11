@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ralph Wiggum Loop</title>
+    <style>
+      :root {
+        --bg: #f5e8c6;
+        --ink: #24160f;
+        --panel: #fff7e7;
+        --sun: #ffd253;
+        --track: #b88553;
+        --track-edge: #e7c391;
+        --accent: #8e2d20;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Trebuchet MS", "Verdana", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 10% 5%, #fff5d8 0, transparent 35%),
+          radial-gradient(circle at 90% 0, #ffe9a9 0, transparent 28%),
+          linear-gradient(180deg, #f7eac6 0%, #f2d69f 45%, #efc982 100%);
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+
+      main {
+        width: min(920px, 100%);
+        background: var(--panel);
+        border: 3px solid #5e442f;
+        border-radius: 18px;
+        box-shadow: 0 22px 45px rgba(45, 24, 10, 0.2);
+        padding: 20px;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: clamp(1.5rem, 2.5vw, 2rem);
+        letter-spacing: 0.02em;
+      }
+
+      p {
+        margin: 0 0 16px;
+        line-height: 1.45;
+      }
+
+      .stage {
+        display: grid;
+        justify-items: center;
+        gap: 12px;
+      }
+
+      canvas {
+        width: min(100%, 704px);
+        height: auto;
+        border-radius: 10px;
+        border: 3px solid #5e442f;
+        background: #a8d9ef;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+
+      .controls {
+        width: min(704px, 100%);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff3dd;
+        border: 2px solid #caa883;
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      label {
+        font-weight: 700;
+      }
+
+      input[type="range"] {
+        accent-color: var(--accent);
+      }
+
+      button {
+        border: 2px solid #6b2f25;
+        border-radius: 8px;
+        background: #c9462f;
+        color: #fff8f4;
+        font-weight: 700;
+        padding: 7px 10px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #af3824;
+      }
+
+      output {
+        min-width: 3ch;
+        text-align: right;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Ralph Wiggum Loop</h1>
+      <p>
+        A tiny, self-contained pixel animation of Ralph-style chaos: he runs in circles forever,
+        like an old GIF on repeat.
+      </p>
+
+      <div class="stage">
+        <canvas id="scene" width="704" height="528" aria-label="Pixel art loop of a Ralph-inspired cartoon runner"></canvas>
+
+        <div class="controls">
+          <div class="row">
+            <label for="speed">Speed</label>
+            <input id="speed" type="range" min="40" max="180" value="100">
+            <output id="speed-value" for="speed">1.00x</output>
+          </div>
+
+          <button id="pause" type="button" aria-pressed="false">Pause</button>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const logicalWidth = 176;
+      const logicalHeight = 132;
+      const displayScale = 4;
+
+      const canvas = document.getElementById("scene");
+      const ctx = canvas.getContext("2d", { alpha: false });
+      ctx.imageSmoothingEnabled = false;
+
+      const frameCanvas = document.createElement("canvas");
+      frameCanvas.width = logicalWidth;
+      frameCanvas.height = logicalHeight;
+      const frameCtx = frameCanvas.getContext("2d", { alpha: false });
+      frameCtx.imageSmoothingEnabled = false;
+
+      const speedInput = document.getElementById("speed");
+      const speedValue = document.getElementById("speed-value");
+      const pauseButton = document.getElementById("pause");
+
+      let paused = false;
+      let freezeTime = 0;
+      let lastNow = performance.now();
+      let elapsed = 0;
+
+      speedInput.addEventListener("input", () => {
+        speedValue.textContent = `${(Number(speedInput.value) / 100).toFixed(2)}x`;
+      });
+      speedValue.textContent = "1.00x";
+
+      pauseButton.addEventListener("click", () => {
+        paused = !paused;
+        pauseButton.textContent = paused ? "Resume" : "Pause";
+        pauseButton.setAttribute("aria-pressed", String(paused));
+        if (paused) {
+          freezeTime = elapsed;
+        }
+      });
+
+      function fillRect(ctx2d, color, x, y, w, h) {
+        ctx2d.fillStyle = color;
+        ctx2d.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+      }
+
+      function drawCloud(x, y) {
+        fillRect(frameCtx, "#fff6db", x, y, 12, 4);
+        fillRect(frameCtx, "#fff6db", x + 2, y - 2, 8, 3);
+        fillRect(frameCtx, "#f3e7c9", x + 1, y + 2, 10, 1);
+      }
+
+      function drawTrackHalf(start, end, width, color) {
+        frameCtx.beginPath();
+        frameCtx.ellipse(88, 83, 60, 25, 0, start, end);
+        frameCtx.strokeStyle = color;
+        frameCtx.lineWidth = width;
+        frameCtx.stroke();
+      }
+
+      function drawRunner(x, y, facingRight, frameIndex) {
+        const c = frameCtx;
+        c.save();
+        c.translate(Math.round(x), Math.round(y));
+
+        if (!facingRight) {
+          c.translate(20, 0);
+          c.scale(-1, 1);
+        }
+
+        // Shadow keeps the loop grounded.
+        fillRect(c, "rgba(48, 28, 15, 0.32)", 6, 30, 9, 2);
+
+        const armCycle = [0, 1, 0, -1][frameIndex % 4];
+        const legCycle = [0, 2, 0, -2][frameIndex % 4];
+
+        fillRect(c, "#ea6a22", 7 + armCycle, 17, 2, 7);
+        fillRect(c, "#ea6a22", 12 - armCycle, 17, 2, 7);
+
+        fillRect(c, "#4e8ed1", 7, 16, 7, 9);
+        fillRect(c, "#2f6ba4", 7, 24, 7, 2);
+
+        fillRect(c, "#f1cd8d", 8, 25 + legCycle, 2, 6);
+        fillRect(c, "#f1cd8d", 11, 25 - legCycle, 2, 6);
+        fillRect(c, "#5a2f26", 7, 30 + legCycle, 4, 2);
+        fillRect(c, "#5a2f26", 10, 30 - legCycle, 4, 2);
+
+        fillRect(c, "#f4d79b", 6, 7, 9, 10);
+        fillRect(c, "#d6a96e", 6, 16, 9, 1);
+
+        fillRect(c, "#fff", 8, 11, 2, 2);
+        fillRect(c, "#fff", 11, 11, 2, 2);
+        fillRect(c, "#1f1712", 9, 11, 1, 1);
+        fillRect(c, "#1f1712", 12, 11, 1, 1);
+
+        fillRect(c, "#a14f2f", 8, 14, 5, 1);
+
+        fillRect(c, "#f2d957", 7, 6, 2, 1);
+        fillRect(c, "#f2d957", 10, 5, 2, 2);
+        fillRect(c, "#f2d957", 13, 6, 2, 1);
+
+        c.restore();
+      }
+
+      function drawFrame(ms) {
+        frameCtx.clearRect(0, 0, logicalWidth, logicalHeight);
+
+        const speed = Number(speedInput.value) / 100;
+        const t = ms * 0.001 * speed;
+
+        fillRect(frameCtx, "#87cceb", 0, 0, logicalWidth, 78);
+        fillRect(frameCtx, "#f6d468", 0, 78, logicalWidth, 54);
+
+        fillRect(frameCtx, "#ffdf70", 132, 8, 18, 18);
+
+        drawCloud((t * 4) % 196 - 20, 18);
+        drawCloud((t * 3 + 72) % 216 - 24, 29);
+
+        fillRect(frameCtx, "#82c468", 0, 84, logicalWidth, 48);
+
+        drawTrackHalf(Math.PI, Math.PI * 2, 12, "#97653e");
+        drawTrackHalf(Math.PI, Math.PI * 2, 7, "#cca070");
+
+        const angle = (t * 1.8) % (Math.PI * 2);
+        const cx = 88;
+        const cy = 83;
+        const rx = 60;
+        const ry = 25;
+
+        const x = cx + Math.cos(angle) * rx - 10;
+        const y = cy + Math.sin(angle) * ry - 31;
+        const facingRight = -Math.sin(angle) >= 0;
+        const frameIndex = Math.floor(t * 12) % 4;
+        const isBackHalf = Math.sin(angle) < 0;
+
+        if (isBackHalf) {
+          drawRunner(x, y, facingRight, frameIndex);
+        }
+
+        drawTrackHalf(0, Math.PI, 12, "#b88656");
+        drawTrackHalf(0, Math.PI, 7, "#e7be8f");
+
+        if (!isBackHalf) {
+          drawRunner(x, y, facingRight, frameIndex);
+        }
+
+        // Gentle grain keeps the look near old low-color GIFs.
+        for (let i = 0; i < 80; i += 1) {
+          const gx = (i * 29 + Math.floor(t * 13)) % logicalWidth;
+          const gy = (i * 17 + Math.floor(t * 11)) % logicalHeight;
+          fillRect(frameCtx, "rgba(255,245,210,0.08)", gx, gy, 1, 1);
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(frameCanvas, 0, 0, logicalWidth * displayScale, logicalHeight * displayScale);
+      }
+
+      function tick(now) {
+        const dt = Math.max(0, now - lastNow);
+        lastNow = now;
+
+        if (!paused) {
+          elapsed += dt;
+        }
+
+        drawFrame(paused ? freezeTime : elapsed);
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+    </script>
+  </body>
+</html>
